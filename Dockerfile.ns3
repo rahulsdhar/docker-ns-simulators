@@ -1,0 +1,35 @@
+# Use Ubuntu as base
+FROM ubuntu:22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DISPLAY=:0
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    pkg-config \
+    cmake \
+    python3 \
+    python3-pip \
+    python3-dev \
+    qt5-default \
+    qttools5-dev-tools \
+    qtcreator \
+    x11-apps \
+    gdb \
+    && rm -rf /var/lib/apt/lists/*
+
+# Clone ns-3 (latest release)
+WORKDIR /opt
+RUN git clone https://gitlab.com/nsnam/ns-3-dev.git ns3
+WORKDIR /opt/ns3
+
+# Build ns-3
+RUN ./waf configure --enable-examples --enable-tests && \
+    ./waf build
+
+VOLUME [ "/data" ]
+# Default command: run ns-3
+CMD ["/bin/bash"]
