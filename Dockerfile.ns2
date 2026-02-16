@@ -1,5 +1,5 @@
 # Base image
-FROM ubuntu:22.04
+FROM ubuntu:14.04
 
 # Environment setup
 ENV DEBIAN_FRONTEND=noninteractive
@@ -16,21 +16,20 @@ RUN apt-get update && apt-get install -y \
     git \
     wget \
     nam \
+    libxmu-dev automake autoconf \
     && rm -rf /var/lib/apt/lists/*
 
 # Download ns-2 (latest stable release: ns-allinone-2.35)
-WORKDIR /opt
-RUN wget https://sourceforge.net/projects/nsnam/files/allinone/ns-allinone-2.35/ns-allinone-2.35.tar.gz && \
-    tar -xvzf ns-allinone-2.35.tar.gz && \
-    rm ns-allinone-2.35.tar.gz
+COPY NSInstaller/ns-allinone-2.35.tar.xz /opt/installer/
+RUN tar -xJf /opt/installer/ns-allinone-2.35.tar.xz && rm -R /opt/installer
 
 # Build ns-2
-WORKDIR /opt/ns-allinone-2.35
+WORKDIR /ns-allinone-2.35
 RUN ./install
 
 # Add ns2 binaries to PATH
-ENV PATH="/opt/ns-allinone-2.35/bin:/opt/ns-allinone-2.35/tcl8.5.10/unix:/opt/ns-allinone-2.35/tk8.5.10/unix:$PATH"
-ENV LD_LIBRARY_PATH="/opt/ns-allinone-2.35/otcl-1.14:/opt/ns-allinone-2.35/lib"
+ENV PATH="/ns-allinone-2.35/bin:/ns-allinone-2.35/tcl8.5.10/unix:/ns-allinone-2.35/tk8.5.10/unix:$PATH"
+ENV LD_LIBRARY_PATH="/ns-allinone-2.35/otcl-1.14:/ns-allinone-2.35/lib"
 
 # Default command
 CMD ["/bin/bash"]
