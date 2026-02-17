@@ -30,6 +30,7 @@ RUN ./install
 # Add ns2 binaries to PATH
 ENV PATH="/ns-allinone-2.35/bin:/ns-allinone-2.35/tcl8.5.10/unix:/ns-allinone-2.35/tk8.5.10/unix:$PATH"
 ENV LD_LIBRARY_PATH="/ns-allinone-2.35/otcl-1.14:/ns-allinone-2.35/lib"
-
+RUN apt-get install -y nam
 # Default command
+WORKDIR /opt/ns2/code
 CMD ["/bin/bash"]

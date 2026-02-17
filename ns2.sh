@@ -21,7 +21,11 @@ fi
 
 # === Step 4: Run ns-2 container with mounted code/ directory ===
 echo "Running ns-2 container..."
+xhost +local:docker
 docker run -it --rm \
+    --net=host \
+    -e XAUTHORITY=$XAUTHORITY \
     -e DISPLAY=$DISPLAY \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v "$CODE_DIR":/opt/ns2/code \
     ns2-gui
