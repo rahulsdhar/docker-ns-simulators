@@ -20,17 +20,19 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Download ns-2 (latest stable release: ns-allinone-2.35)
-COPY NSInstaller/ns-allinone-2.35.tar.xz /opt/installer/
-RUN tar -xJf /opt/installer/ns-allinone-2.35.tar.xz && rm -R /opt/installer
+COPY NSInstaller/ns-allinone-2.35_with_aquasim.tar.xz /opt/installer/
+RUN tar -xJf /opt/installer/ns-allinone-2.35_with_aquasim.tar.xz && rm -R /opt/installer
 
 # Build ns-2
+ENV PATH="/ns-allinone-2.35/nam-1.15:/ns-allinone-2.35/ns-2.35:/ns-allinone-2.35/tcl8.5.10/unix:/ns-allinone-2.35/tk8.5.10/unix:$PATH"
+ENV LD_LIBRARY_PATH="/ns-allinone-2.35/otcl-1.14:/ns-allinone-2.35/lib"
 WORKDIR /ns-allinone-2.35
 RUN ./install
-
-# Add ns2 binaries to PATH
-ENV PATH="/ns-allinone-2.35/bin:/ns-allinone-2.35/tcl8.5.10/unix:/ns-allinone-2.35/tk8.5.10/unix:$PATH"
-ENV LD_LIBRARY_PATH="/ns-allinone-2.35/otcl-1.14:/ns-allinone-2.35/lib"
-RUN apt-get install -y nam
+WORKDIR /ns-allinone-2.35/ns-2.35
+RUN ./configure && make clean && make
+WORKDIR /ns-allinone-2.35/nam-1.15
+RUN ./configure && make clean && make
+RUN hash -r
 # Default command
 WORKDIR /opt/ns2/code
 CMD ["/bin/bash"]
